@@ -11,7 +11,6 @@ app.get('/api/topics', getTopics)
 app.get('/api/articles/:article_id', getArticle)
 app.patch('/api/articles/:article_id', updateArticleVoteCount)
 
-
 app.all('/api/*', (req, res) => {
     res.status(404).send({msg: 'Invalid path'})
 })
