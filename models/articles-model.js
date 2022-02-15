@@ -14,7 +14,7 @@ exports.selectArticle = async (articleId) => {
 exports.incrementVote = async (articleId, vote) => {   
     return db.query('SELECT * FROM articles WHERE articles.article_id = $1;', [articleId])
     .then(({rows: [article]}) => {
-        article.votes++
+        article.votes = vote
         return article;
     })
 }

@@ -19,6 +19,5 @@ exports.updateArticleVoteCount = (req, res) => {
     incrementVote(articleId, newVote)
     .then((updatedArticle) => {
         res.status(202).send({updatedArticle})
-        
     })
 }
