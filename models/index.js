@@ -6,8 +6,6 @@ exports.selectTopics = async () => {
 }
 
 exports.selectArticle = (id) => {
-    // green list for 400 bad request
-
 
     return db.query('SELECT * FROM articles WHERE articles.article_id = $1;', [id])
     .then((response) => {

@@ -1,4 +1,6 @@
+const { checkout } = require('../app')
 const { selectTopics, selectArticle } = require('../models/index')
+const checkExists = require('../db/helpers/utils')
 
 
 exports.getTopics = (req, res, next) => {
@@ -12,12 +14,13 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getArticle = (req, res, next) => {
-    const {article_id} = req.params
-    selectArticle(article_id)
+    const {article_id: articleId} = req.params
+
+    selectArticle(articleId)
     .then((article) => {
         res.status(200).send({article})
     })
     .catch((err) => {
-        return next(err)
+        next(err)
     })
 }

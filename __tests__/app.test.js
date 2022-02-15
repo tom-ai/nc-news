@@ -9,7 +9,20 @@ afterAll(() => {
     connection.end()
 })
 
+// 500 server error
+
+
 describe('/api', () => {
+    describe('Universal errors', () => {
+        test('status: 404, path does not exist', () => {
+            return request(app)
+            .get('/api/notARoute')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('Invalid path')
+            })
+        })
+    });
     describe('GET /topics', () => {
         test('Status: 200, responds with an array of topics', () => {
             return request(app)
@@ -34,14 +47,6 @@ describe('/api', () => {
                 })
             })
         })
-        test('status: 404, path does not exist', () => {
-            return request(app)
-            .get('/api/notARoute')
-            .expect(404)
-            .then(({body}) => {
-                expect(body.msg).toBe('Invalid path')
-            })
-        })
     });
     describe('GET /articles', () => {
         describe('/api/articles/:article_id', () => {
@@ -63,12 +68,22 @@ describe('/api', () => {
                 })
             })
             test('status: 404, item not found', () => {
-                const article_id = 9999999
+                const articleId = 9999999
                 return request(app)
-                .get(`/api/articles/${article_id}`)
+                .get(`/api/articles/${articleId}`)
                 .expect(404)
                 .then(({body}) => {
                     expect(body.msg).toBe('Item not found')
+                })
+            })
+            test.only('status: 400, invalid ID', () => {
+                const articleId = 'banana'
+                return request(app)
+                .get(`/api/articles/${articleId}`)
+                .expect(400)
+                .then(({body: {msg}}) => {
+                    // console.log(msg)
+                    expect(msg).toBe('Invalid ID')
                 })
             })
         });
