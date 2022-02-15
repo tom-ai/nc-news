@@ -76,7 +76,7 @@ describe('/api', () => {
                     expect(body.msg).toBe('Item not found')
                 })
             })
-            test.only('status: 400, invalid ID', () => {
+            test('status: 400, invalid ID', () => {
                 const articleId = 'banana'
                 return request(app)
                 .get(`/api/articles/${articleId}`)
