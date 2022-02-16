@@ -48,48 +48,44 @@ describe('GET /topics', () => {
         })
     })
 });
-describe('GET /articles', () => {
-    describe('/api/articles/:article_id', () => {
-        test('status: 200, responds with article object', () => {
-            const article_id = 1;
-            return request(app)
-            .get(`/api/articles/${article_id}`)
-            .expect(200)
-            .then(({body}) => {
-                expect(body.article).toEqual( {
-                    author: "butter_bridge",
-                    title: "Living in the shadow of a great man",
-                    article_id: 1,
-                    body: "I find this existence challenging",
-                    topic: "mitch",
-                    created_at: "2020-07-09T20:11:00.000Z",
-                    votes: 100,
-                })
-            })
+describe('GET /articles by article_id', () => {
+  test('status: 200, responds with article object', () => {
+    const article_id = 1;
+    return request(app)
+    .get(`/api/articles/${article_id}`)
+    .expect(200)
+    .then(({body}) => {
+        expect(body.article).toEqual( {
+            author: "butter_bridge",
+            title: "Living in the shadow of a great man",
+            article_id: 1,
+            body: "I find this existence challenging",
+            topic: "mitch",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
         })
-        test('status: 404, item not found', () => {
-            const articleId = 9999999
-            return request(app)
-            .get(`/api/articles/${articleId}`)
-            .expect(404)
-            .then(({body}) => {
-                expect(body.msg).toBe('Item not found')
-            })
-        })
-        test('status: 400, invalid ID', () => {
-            const articleId = 'banana'
-            return request(app)
-            .get(`/api/articles/${articleId}`)
-            .expect(400)
-            .then(({body: {msg}}) => {
-                // console.log(msg)
-                expect(msg).toBe('Invalid ID')
-            })
-        })
-    });
+    })
+})
+test('status: 404, item not found', () => {
+    const articleId = 9999999
+    return request(app)
+    .get(`/api/articles/${articleId}`)
+    .expect(404)
+    .then(({body}) => {
+        expect(body.msg).toBe('Item not found')
+    })
+})
+test('status: 400, invalid ID', () => {
+    const articleId = 'banana'
+    return request(app)
+    .get(`/api/articles/${articleId}`)
+    .expect(400)
+    .then(({body: {msg}}) => {
+        // console.log(msg)
+        expect(msg).toBe('Invalid ID')
+    })
+})
 });
-
-
 
 describe('GET /users', () => {
   test('responds with an array of user objectse', () => {
@@ -100,7 +96,7 @@ describe('GET /users', () => {
       expect(users).toHaveLength(4)
     })
   })
-  test('Each object should contain a username property', () => {
+  test('each object should contain a username property', () => {
     return request(app)
     .get('/api/users')
     .expect(200)
