@@ -92,7 +92,24 @@ describe('GET /articles', () => {
 
 
 describe('GET /users', () => {
-  test('', () => {
-    
+  test('responds with an array of user objectse', () => {
+    return request(app)
+    .get('/api/users')
+    .expect(200)
+    .then(({body: {users}}) => {
+      expect(users).toHaveLength(4)
+    })
+  })
+  test('Each object should contain a username property', () => {
+    return request(app)
+    .get('/api/users')
+    .expect(200)
+    .then(({body: {users}}) => {
+      users.forEach((user) => {
+        expect(user).toEqual(expect.objectContaining({
+          username: expect.any(String)
+        }))
+      })
+    })
   })
 });
