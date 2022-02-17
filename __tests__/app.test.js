@@ -1,91 +1,145 @@
 const request = require("supertest");
-const app = require('../app')
-const connection = require('../db/connection')
-const seed = require('../db/seeds/seed')
-const testData = require('../db/data/test-data/index')
+const app = require("../app");
+const connection = require("../db/connection");
+const seed = require("../db/seeds/seed");
+const testData = require("../db/data/test-data/index");
 
 beforeEach(() => seed(testData));
 afterAll(() => {
-    connection.end()
-})
+  connection.end();
+});
 
-// 500 server error
+describe("Universal errors", () => {
+  test("status: 404, path does not exist", () => {
+    return request(app)
+      .get("/api/notARoute")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid path");
+      });
+  });
 
+  // 500 server error?
+});
 
-describe('/api', () => {
-    describe('Universal errors', () => {
-        test('status: 404, path does not exist', () => {
-            return request(app)
-            .get('/api/notARoute')
-            .expect(404)
-            .then(({body}) => {
-                expect(body.msg).toBe('Invalid path')
-            })
-        })
-    });
-    describe('GET /topics', () => {
-        test('Status: 200, responds with an array of topics', () => {
-            return request(app)
-            .get('/api/topics')
-            .expect(200)
-            .then(({body}) => {
-                expect(body.topics).toHaveLength(3)
-            })
-        })        
-        test('Status: 200, each item looks correct', () => {
-            return request(app)
-            .get('/api/topics')
-            .expect(200)
-            .then(({body: {topics}}) => {
-                topics.forEach(topic => {
-                    expect(topic).toEqual(
-                        expect.objectContaining({
-                            description: expect.any(String),
-                            slug: expect.any(String)
-                        })
-                    )
-                })
-            })
-        })
-    });
-    describe('GET /articles', () => {
-        describe('/api/articles/:article_id', () => {
-            test('status: 200, responds with article object', () => {
-                const article_id = 1;
-                return request(app)
-                .get(`/api/articles/${article_id}`)
-                .expect(200)
-                .then(({body}) => {
-                    expect(body.article).toEqual( {
-                        author: "butter_bridge",
-                        title: "Living in the shadow of a great man",
-                        article_id: 1,
-                        body: "I find this existence challenging",
-                        topic: "mitch",
-                        created_at: "2020-07-09T20:11:00.000Z",
-                        votes: 100,
-                    })
-                })
-            })
-            test('status: 404, item not found', () => {
-                const articleId = 9999999
-                return request(app)
-                .get(`/api/articles/${articleId}`)
-                .expect(404)
-                .then(({body}) => {
-                    expect(body.msg).toBe('Item not found')
-                })
-            })
-            test('status: 400, invalid ID', () => {
-                const articleId = 'banana'
-                return request(app)
-                .get(`/api/articles/${articleId}`)
-                .expect(400)
-                .then(({body: {msg}}) => {
-                    // console.log(msg)
-                    expect(msg).toBe('Invalid ID')
-                })
-            })
+describe('Topics', () => {
+  describe("GET /topics", () => {
+    test("Status: 200, responds with an array of topics", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.topics).toHaveLength(3);
         });
     });
+    test("Status: 200, each item looks correct", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then(({ body: { topics } }) => {
+          topics.forEach((topic) => {
+            expect(topic).toEqual(
+              expect.objectContaining({
+                description: expect.any(String),
+                slug: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
+});
+
+describe('Articles', () => {
+  describe("GET /articles", () => {
+    test("status: 200, responds with article object", () => {
+      const article_id = 1;
+      return request(app)
+        .get(`/api/articles/${article_id}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).toEqual({
+            author: "butter_bridge",
+            title: "Living in the shadow of a great man",
+            article_id: 1,
+            body: "I find this existence challenging",
+            topic: "mitch",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+          });
+        });
+    });
+    test("status: 404, item not found", () => {
+      const articleId = 9999999;
+      return request(app)
+        .get(`/api/articles/${articleId}`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Item not found");
+        });
+    });
+    test("status: 400, invalid ID", () => {
+      const articleId = "banana";
+      return request(app)
+        .get(`/api/articles/${articleId}`)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid ID");
+        });
+    });
+  });
+  describe("PATCH :article_id with vote count", () => {
+    test("article vote increments by vote amount", () => {
+      const articleId = 2;
+      const newVote = { inc_votes: 5 };
+  
+      return request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(newVote)
+        .expect(202)
+        .then(({ body: { updatedArticle } }) => {
+          expect(updatedArticle).toEqual({
+            article_id: 2,
+            author: "icellusedkars",
+            title: "Sony Vaio; or, The Laptop",
+            body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+            topic: "mitch",
+            created_at: "2020-10-16T05:03:00.000Z",
+            votes: 5,
+          });
+        });
+    });
+    test("article votes can decrement by any given amount", () => {
+      const articleId = 2;
+      const newVote = { inc_votes: -5 };
+  
+      return request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(newVote)
+        .expect(202)
+        .then(({ body: { updatedArticle } }) => {
+          expect(updatedArticle).toEqual({
+            article_id: 2,
+            author: "icellusedkars",
+            title: "Sony Vaio; or, The Laptop",
+            body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+            topic: "mitch",
+            created_at: "2020-10-16T05:03:00.000Z",
+            votes: -5,
+          });
+        });
+    });
+    test("Status: 400, malformed body or missing fields", () => {
+      const articleId = 2;
+      const newVote = 1;
+  
+      return request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send({ newVote })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid vote");
+        });
+    });
+  });
 });
