@@ -193,19 +193,19 @@ describe("PATCH article vote count", () => {
   });
 });
 
-describe('POST /comment', () => {
+describe.only('POST /comment', () => {
     test('status: 201, responds with newly created comment', () => {
         const articleId = 1
-        const newComment = {
+        const comment = {
             username: 'user101',
             body: 'This is a comment'
         }
         return request(app)
         .post(`/api/articles/${articleId}/comments`)
-        .send(newComment)
+        .send({comment})
         .expect(201)
-        .then(({body: {comment}}) => {
-            expect(comment).toEqual(newComment)
+        .then(({body: {postedComment}}) => {
+            expect(postedComment).toEqual(comment)
         })
     });
     

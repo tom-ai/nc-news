@@ -8,6 +8,9 @@ const { getTopics  } = require('./controllers/topics-controller')
 const { customErrorHandler, psqlErrorHandler } = require('./errors')
 const {getArticleById, updateArticleVoteCount, getArticles } = require('./controllers/articles-controller')
 
+
+const { postComment } = require('./controllers/comments-controller')
+
 const app = express()
 app.use(express.json())
 
