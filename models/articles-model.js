@@ -1,16 +1,13 @@
-const db = require('../db/connection')
+const db = require("../db/connection");
 
-exports.selectArticle = async (articleId) => {
-  return db
-    .query("SELECT * FROM articles WHERE articles.article_id = $1;", [
+exports.selectArticleById = async (articleId) => {
+  const {rows: articles} = await db.query("SELECT * FROM articles WHERE articles.article_id = $1;", [
       articleId,
     ])
-    .then((response) => {
-      if (response.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Item not found" });
-      }
-      return response.rows[0];
-    });
+  if (articles.length === 0) {
+    return Promise.reject({ status: 404, msg: "Item not found" });
+  }
+  return articles[0];
 };
 
 exports.incrementVote = async (articleId, vote) => {
@@ -28,8 +25,8 @@ exports.incrementVote = async (articleId, vote) => {
 };
 
 exports.selectArticles = async () => {
-  const response = await db.query(
+  const {rows: articles} = await db.query(
     "SELECT * FROM articles ORDER BY articles.created_at DESC;"
   );
-  return response.rows;
+  return articles;
 };
