@@ -1,4 +1,4 @@
-const db = require("../db/connection");
+const db = require('../db/connection')
 
 exports.selectArticle = async (articleId) => {
   return db
@@ -25,4 +25,11 @@ exports.incrementVote = async (articleId, vote) => {
       article.votes = vote;
       return article;
     });
+};
+
+exports.selectArticles = async () => {
+  const response = await db.query(
+    "SELECT * FROM articles ORDER BY articles.created_at DESC;"
+  );
+  return response.rows;
 };

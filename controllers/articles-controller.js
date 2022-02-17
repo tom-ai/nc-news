@@ -1,4 +1,4 @@
-const {selectArticle, incrementVote } = require('../models/articles-model')
+const {selectArticle, selectArticles, incrementVote } = require('../models/articles-model')
 
 exports.getArticle = (req, res, next) => {
     const {article_id: articleId} = req.params
@@ -22,3 +22,13 @@ exports.updateArticleVoteCount = (req, res, next) => {
         next(err)
     })
 }
+
+
+exports.getArticles = (req, res, next) => {
+  selectArticles().then((articles) => {
+    res.status(200).send({ articles });
+  })
+  .catch((err) => {
+      next(err)
+  })
+};
