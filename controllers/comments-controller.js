@@ -2,11 +2,11 @@ const {createNewComment} = require('../models/comments-model')
 
 
 exports.postComment = (req, res, next) => {
-    const {article_id: articleId } = req.params
     const { comment } = req.body
-
+    const { article_id: articleId } = req.params
+    
     createNewComment(comment, articleId)
-    .then((response) => {
-        // console.log(response)
+    .then((postedComment) => {
+        res.status(201).send({postedComment})
     })
 }

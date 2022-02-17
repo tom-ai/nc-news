@@ -1,17 +1,18 @@
 const db = require('../db/connection')
+const format = require('pg-format');
+
 
 exports.createNewComment = (comment, articleId) => {
     const username = comment.username;
     const body = comment.body
 
-    console.log(articleId)
 
-    const queryStr = `
+    return db.query(`
         INSERT INTO comments
             (author, body, article_id)
         VALUES
-            (%I, %I, %I);`
-
-    return db.query(`
-        )
+            ($1, $2, $3) RETURNING *`, [username, body, articleId])
+    .then((result) => {
+        return result.rows[0]
+    })
 }

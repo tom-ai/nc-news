@@ -193,11 +193,11 @@ describe("PATCH article vote count", () => {
   });
 });
 
-describe.only('POST /comment', () => {
+describe('POST /comment', () => {
     test('status: 201, responds with newly created comment', () => {
         const articleId = 1
         const comment = {
-            username: 'user101',
+            username: 'butter_bridge',
             body: 'This is a comment'
         }
         return request(app)
@@ -205,7 +205,14 @@ describe.only('POST /comment', () => {
         .send({comment})
         .expect(201)
         .then(({body: {postedComment}}) => {
-            expect(postedComment).toEqual(comment)
+            expect(postedComment).toEqual({
+              body: 'This is a comment',
+              comment_id: expect.any(Number),
+              article_id: 1,
+              author: 'butter_bridge',
+              votes: expect.any(Number),
+              created_at: expect.any(String)
+            })
         })
     });
     
