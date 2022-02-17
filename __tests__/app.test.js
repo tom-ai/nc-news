@@ -9,9 +9,6 @@ afterAll(() => {
     connection.end()
 })
 
-// 500 server error
-
-
 describe('/api', () => {
     describe('Universal errors', () => {
         test('status: 404, path does not exist', () => {
@@ -88,4 +85,35 @@ describe('/api', () => {
             })
         });
     });
+});
+
+
+describe('/GET articles', () => {
+    test('should respond with an array of articles objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body: {articles}}) => {
+            articles.forEach((article) => {
+                expect(article).toEqual(
+                    expect.objectContaining({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                    })
+                )
+            })
+        })
+    });
+    test('articles should be sorted by date in descending order', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body: {articles}}) => {
+            expect(articles).toBeSortedBy('created_at', {descending: true})
+        })
+    })
 });
