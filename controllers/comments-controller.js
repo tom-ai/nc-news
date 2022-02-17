@@ -1,18 +1,14 @@
-const db = require('../db/connection')
+const comments = require("../db/data/test-data/comments")
+const { selectComments } = require("../models/comments-model")
 
-exports.selectComments = (id) => {
 
-    // if (typeof id != 'number') {
-    //     next()
-    // }
-    return db.query(`
-    SELECT comment_id, body, author, votes, created_at
-    FROM comments
-    WHERE article_id = $1`, [id])
-    .then((response) => {
-        if (response.rows.length === 0) {
-            return Promise.reject({status: '404', msg: 'Article not found'})
-        }
-        return response.rows
+exports.getComments = (req, res, next) => {
+    const {article_id: articleId} = req.params;
+    selectComments(articleId)
+    .then((comments) => {
+        res.status(200).send({comments})
+    })
+    .catch((err) => {
+        next(err)
     })
 }

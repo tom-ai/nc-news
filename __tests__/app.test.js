@@ -77,7 +77,6 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${articleId}`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        // console.log(msg)
         expect(msg).toBe("Invalid ID");
       });
   });
@@ -222,14 +221,14 @@ describe('GET /comments', () => {
             expect(body.msg).toBe('Article not found')
         })
     })
-    // test('status: 400, invalid article ID', () => {
-    //     const articleId = 'banana'
-    //     return request(app)
-    //     .get(`/api/articles/${articleId}/comments`)
-    //     .expect(400)
-    //     .then(({body: {msg}}) => {
-    //         expect(msg).toBe('Invalid article ID')
-    //     })
-    // })
+    test('status: 400, invalid article ID', () => {
+        const articleId = 'apples'
+        return request(app)
+        .get(`/api/articles/${articleId}/comments`)
+        .expect(400)
+        .then(({body: {msg}}) => {
+            expect(msg).toBe('Invalid ID')
+        })
+    })
     
 });
