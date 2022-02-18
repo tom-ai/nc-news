@@ -229,4 +229,18 @@ describe('POST /comment', () => {
           expect(msg).toEqual('Article does not exist') 
       })
     })
+    test.only('status: 404, user does not exist', () => {
+      const articleId = 1
+      const comment = {
+          username: 'butter_bridgeeeeee',
+          body: 'This is a comment'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(404)
+      .then(({body: {msg}}) => {
+          expect(msg).toEqual('User does not exist') 
+      })
+    })
 });

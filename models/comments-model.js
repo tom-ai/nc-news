@@ -4,7 +4,6 @@ const format = require('pg-format');
 exports.createNewComment = (comment, articleId) => {
     const username = comment.username;
     const body = comment.body
-
     return db.query(`
         INSERT INTO comments
             (author, body, article_id)
