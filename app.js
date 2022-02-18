@@ -1,7 +1,8 @@
 const express = require('express')
 
+
 const { getArticleById, updateArticleVoteCount, getArticles } = require('./controllers/articles-controller')
-const { getComments } = require('./controllers/comments-controller')
+const { getComments, postComment } = require('./controllers/comments-controller')
 const { getTopics  } = require('./controllers/topics-controller')
 const { getUsers } = require('./controllers/users-controller')
 
@@ -17,13 +18,13 @@ app.get('/api/articles/:article_id/comments', getComments)
 app.patch('/api/articles/:article_id', updateArticleVoteCount)
 app.get('/api/users', getUsers)
 
+app.post('/api/articles/:article_id/comments', postComment)
+
 app.all('/api/*', (req, res) => {
     res.status(404).send({msg: 'Not found'})
 })
 
-
 app.use(customErrorHandler);
 app.use(psqlErrorHandler);
-
 
 module.exports = app;

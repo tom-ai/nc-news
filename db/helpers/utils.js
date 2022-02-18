@@ -1,4 +1,5 @@
 const format = require('pg-format')
+const db = require('../connection')
 
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
@@ -22,4 +23,8 @@ exports.formatComments = (comments, idLookup) => {
       ...this.convertTimestampToDate(restOfComment),
     };
   });
+
 };
+
+
+

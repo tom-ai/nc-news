@@ -31,7 +31,7 @@ exports.incrementVote = async (articleId, vote) => {
     ])
     .then(({ rows: [article] }) => {
       article.votes = vote;
-      return article;
+      return article; 
     });
 };
 
