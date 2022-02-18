@@ -15,7 +15,7 @@ describe("Universal errors", () => {
       .get("/api/notARoute")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid path");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -70,7 +70,7 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${articleId}`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article not found");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("status: 400, invalid ID", () => {
@@ -79,7 +79,7 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${articleId}`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid ID");
+        expect(msg).toBe("Invalid request");
       });
   });
 });
@@ -129,7 +129,7 @@ describe("GET /articles", () => {
         });
       });
   });
-  test("status: 200, articles should be sorted by date in descending order", () => {
+  test("status: 200, by default articles should be sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -137,7 +137,75 @@ describe("GET /articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  describe('sort_by', () => {
+    test('status: 200, sort_by sorts the articles (date by default)', () => {
+      return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles }}) => {
+        expect(articles).toBeSortedBy("title", {descending: true})
+      })
+    })
+    test('status: 400, invalid sort_by query', () => {
+      return request(app)
+      .get("/api/articles?sort_by=invalid_query")
+      .expect(400)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe('Invalid sort_by query')
+      })
+    })
+  });
+  describe('order by ASC or DESC', () => {
+    test('status: 200, articles order can be overided to ASC)', () => {
+      return request(app)
+      .get("/api/articles?order=desc")
+      .expect(200)
+      .then(({ body: { articles }}) => {
+        expect(articles).toBeSorted()
+      })  
+    })
+    test('status: 200, articles can be sorted and ordered', () => {
+      return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body: { articles }}) => {
+        expect(articles).toBeSortedBy("author")
+      })  
+    })
+    test('status: 400, invalid order query', () => {
+      return request(app)
+      .get("/api/articles?sort_by=author&order=invalid_order")
+      .expect(400)
+      .then(({ body: { msg }}) => {
+        expect(msg).toBe('Invalid order query')
+      })  
+    })
+    test('status: 200, articles filtered by topic', () => {
+      const slug = 'mitch'
+      return request(app)
+      .get(`/api/articles?topic=${slug}`)
+      .expect(200)
+      .then(({body: {articles}}) => {
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              topic: 'mitch'
+            }))
+        })
+      })
+    })
+    test('status: 400, invalid filter query', () => {
+      return request(app)
+      .get('/api/articles?topic=invalid_filter')
+      .expect(400)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe('Invalid filter query')
+      })
+    })
+  });
 });
+
+
 
 describe("PATCH article vote count", () => {
   test("status: 200, article vote increments by vote amount", () => {
@@ -280,13 +348,23 @@ describe("GET /comments", () => {
       });
   });
 
+  test("status: 404, article not found", () => {
+    const articleId = 9999999;
+    return request(app)
+      .get(`/api/articles/${articleId}/comments`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
   test("status: 400, invalid article ID", () => {
     const articleId = "apples";
     return request(app)
       .get(`/api/articles/${articleId}/comments`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid ID");
+        expect(msg).toBe("Invalid request");
       });
   });
 });
@@ -308,7 +386,7 @@ describe("Feature: each article object includes comment count - 10", () => {
   });
 });
 
-describe("Feature Request: comment count", () => {
+describe("Feature: comment count", () => {
   test("status: 200, article response object contains comment count", () => {
     const articleId = 1;
     return request(app)
@@ -318,15 +396,6 @@ describe("Feature Request: comment count", () => {
         expect(article).toMatchObject({
           comment_count: expect.any(String), // Cannot convert to number in query
         });
-      });
-  });
-  test("status: 404, article does not exist", () => {
-    const articleId = 99999;
-    return request(app)
-      .get(`/api/articles/${articleId}`)
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toEqual("Article not found");
       });
   });
 
