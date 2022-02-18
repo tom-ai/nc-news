@@ -37,7 +37,8 @@ exports.incrementVote = async (articleId, vote) => {
 
 exports.selectArticles = async (
   sort_by = 'created_at',
-  order = 'desc'
+  order = 'desc',
+  filter
   ) => {
 
     if (!['article_id', 'author', 'title', 'body', 'topic', 'created_at', 'votes'].includes(sort_by)) {
@@ -48,10 +49,24 @@ exports.selectArticles = async (
       return Promise.reject({status: 400, msg: "Invalid order query"})
     }
 
+    if (filter) {
+      const topics = await db.query('SELECT slug FROM topics ')
+      const topicSlugs = topics.rows.map((topic) => {
+        const { slug } = topic;
+        return slug
+      })
+  
+      if (!topicSlugs.includes(filter)) {
+        return Promise.reject({status: 400, msg: 'Invalid filter query'})
+      }
+    }
+    
+
     const queryStr = format(`SELECT articles.*,
     COUNT(comments.comment_id) AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
+    WHERE articles.topic = '${filter}'
     GROUP BY articles.article_id
     ORDER BY articles.${sort_by} ${order};
     `)

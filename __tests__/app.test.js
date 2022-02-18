@@ -180,6 +180,28 @@ describe("GET /articles", () => {
         expect(msg).toBe('Invalid order query')
       })  
     })
+    test('status: 200, articles filtered by topic', () => {
+      const slug = 'mitch'
+      return request(app)
+      .get(`/api/articles?topic=${slug}`)
+      .expect(200)
+      .then(({body: {articles}}) => {
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              topic: 'mitch'
+            }))
+        })
+      })
+    })
+    test('status: 400, invalid filter query', () => {
+      return request(app)
+      .get('/api/articles?topic=invalid_filter')
+      .expect(400)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe('Invalid filter query')
+      })
+    })
   });
 });
 
