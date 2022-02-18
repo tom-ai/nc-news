@@ -226,10 +226,10 @@ describe('POST /comment', () => {
       .send({comment})
       .expect(404)
       .then(({body: {msg}}) => {
-          expect(msg).toEqual('Article does not exist') 
+          expect(msg).toEqual('Not found') 
       })
     })
-    test.only('status: 404, user does not exist', () => {
+    test('status: 404, user does not exist', () => {
       const articleId = 1
       const comment = {
           username: 'butter_bridgeeeeee',
@@ -240,7 +240,21 @@ describe('POST /comment', () => {
       .send({comment})
       .expect(404)
       .then(({body: {msg}}) => {
-          expect(msg).toEqual('User does not exist')
+          expect(msg).toEqual('Not found')
+      })
+    })
+    test('status 400: malformed body', () => {
+      const articleId = 1
+      const comment = {
+          username: 'butter_bridge',
+          comment: 'This has an incorrectly named property'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(400)
+      .then(({body: {msg}}) => {
+          expect(msg).toEqual('Malformed body') 
       })
     })
 });
