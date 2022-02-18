@@ -194,6 +194,71 @@ describe("PATCH article vote count", () => {
   });
 });
 
+describe('POST /comment', () => {
+    test('status: 201, responds with newly created comment', () => {
+      const articleId = 1
+      const comment = {
+          username: 'butter_bridge',
+          body: 'This is a comment'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(201)
+      .then(({body: {postedComment}}) => {
+          expect(postedComment).toEqual({
+            body: 'This is a comment',
+            comment_id: expect.any(Number),
+            article_id: 1,
+            author: 'butter_bridge',
+            votes: expect.any(Number),
+            created_at: expect.any(String)
+          })
+      })
+    });
+    test('status: 404, article does not exist', () => {
+      const articleId = 99999
+      const comment = {
+          username: 'butter_bridge',
+          body: 'This is a comment'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(404)
+      .then(({body: {msg}}) => {
+          expect(msg).toEqual('Not found') 
+      })
+    })
+    test('status: 404, user does not exist', () => {
+      const articleId = 1
+      const comment = {
+          username: 'butter_bridgeeeeee',
+          body: 'This is a comment'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(404)
+      .then(({body: {msg}}) => {
+          expect(msg).toEqual('Not found')
+      })
+    })
+    test('status 400: malformed body', () => {
+      const articleId = 1
+      const comment = {
+          username: 'butter_bridge',
+          comment: 'This has an incorrectly named property'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(400)
+      .then(({body: {msg}}) => {
+          expect(msg).toEqual('Malformed body') 
+      })
+    })
+
 describe("GET /comments", () => {
   test("responds with an array of comments for the given article_id", () => {
     const articleId = 1;
@@ -214,15 +279,7 @@ describe("GET /comments", () => {
         });
       });
   });
-  test("status: 404, article not found", () => {
-    const articleId = 9999999;
-    return request(app)
-      .get(`/api/articles/${articleId}/comments`)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Article not found");
-      });
-  });
+
   test("status: 400, invalid article ID", () => {
     const articleId = "apples";
     return request(app)
@@ -272,4 +329,5 @@ describe("Feature Request: comment count", () => {
         expect(msg).toEqual("Article not found");
       });
   });
+
 });

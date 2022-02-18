@@ -1,4 +1,5 @@
 const format = require('pg-format')
+const db = require('../connection')
 
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
@@ -24,12 +25,13 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
-// exports.checkExists = async (table, column, id) => {
-//   const queryStr = format('SELECT * FROM $I WHERE $I = $1', table, column)
-//   const dbOutput = await db.query(queryStr, [id]) // Change to 'value' later
+exports.checkUserExists = async (username) => {
+  const dbOutput = await db.query(`
+    SELECT * FROM users WHERE username = $1
+    `,
+    [username])
 
-//   if (dbOutput.rows.length === 0) {
-//     return Promise.reject({status: 400, msg: 'Invalid ID'})
-//   }
-
-// }
+  if (dbOutput.rows.length === 0) {
+    return Promise.reject({status: 404, msg: 'User does not exist'})
+  }
+};
