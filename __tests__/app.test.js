@@ -137,7 +137,7 @@ describe("GET /articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  describe('Additional queries', () => {
+  describe('sort_by', () => {
     test('status: 200, sort_by sorts the articles (date by default)', () => {
       return request(app)
       .get("/api/articles?sort_by=title")
@@ -145,6 +145,24 @@ describe("GET /articles", () => {
       .then(({ body: { articles }}) => {
         expect(articles).toBeSortedBy("title", {descending: true})
       })
+    })
+    test('status: 400, invalid sort_by query', () => {
+      return request(app)
+      .get("/api/articles?sort_by=invalid_query")
+      .expect(400)
+      .then(({body: {msg}}) => {
+        expect(msg).toBe('Invalid sort_by query')
+      })
+    })
+  });
+  describe('order by ASC or DESC', () => {
+    test('status: 200, articles can be sorted by order', () => {
+      return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body: { articles }}) => {
+        expect(articles).toBeSortedBy()
+      })  
     })
   });
 });
