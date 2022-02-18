@@ -240,7 +240,7 @@ describe('POST /comment', () => {
       .send({comment})
       .expect(404)
       .then(({body: {msg}}) => {
-          expect(msg).toEqual('User does not exist') 
+          expect(msg).toEqual('User does not exist')
       })
     })
 });

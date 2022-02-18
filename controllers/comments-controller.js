@@ -7,7 +7,7 @@ exports.postComment = async (req, res, next) => {
     
     const userCheck = await checkUserExists()
     
-    console.log(userCheck)
+    // console.log(userCheck)
 
     createNewComment(comment, articleId)
     .then((postedComment) => {
