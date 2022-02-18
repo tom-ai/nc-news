@@ -137,7 +137,19 @@ describe("GET /articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  describe('Additional queries', () => {
+    test('status: 200, sort_by sorts the articles (date by default)', () => {
+      return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles }}) => {
+        expect(articles).toBeSortedBy("title", {descending: true})
+      })
+    })
+  });
 });
+
+
 
 describe("PATCH article vote count", () => {
   test("status: 200, article vote increments by vote amount", () => {
