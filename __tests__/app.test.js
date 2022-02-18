@@ -51,7 +51,7 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${article_id}`)
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual({
+        expect(body.article).toEqual(expect.objectContaining({
           author: "butter_bridge",
           title: "Living in the shadow of a great man",
           article_id: 1,
@@ -59,7 +59,7 @@ describe("GET article by ID", () => {
           topic: "mitch",
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,
-        });
+        }));
       });
   });
   test("status: 404, item not found", () => {
@@ -68,7 +68,7 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${articleId}`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Item not found");
+        expect(body.msg).toBe("Article not found");
       });
   });
   test("status: 400, invalid ID", () => {
@@ -230,6 +230,7 @@ describe('GET /comments', () => {
             expect(msg).toBe('Invalid ID')
         })
     })
+
     
 });
 
@@ -247,5 +248,29 @@ describe('Feature: each article object includes comment count - 10', () => {
         );
       });
     });
+
+});
+
+describe('Feature Request: comment count', () => {
+  test('status: 200, article response object contains comment count', () => {
+    const articleId = 1
+    return request(app)
+    .get(`/api/articles/${articleId}`)
+    .expect(200)
+    .then(({body: {article}}) => {
+      expect(article).toMatchObject({
+        comment_count: expect.any(String) // Cannot convert to number in query
+      })
+    })
+  })
+  test('status: 404, article does not exist', () => {
+    const articleId = 99999
+    return request(app)
+    .get(`/api/articles/${articleId}`)
+    .expect(404)
+    .then(({body: {msg}}) => {
+      expect(msg).toEqual('Article not found')
+    })
+
   })
 });
