@@ -1,11 +1,6 @@
 const db = require('../db/connection')
 
 exports.selectComments = (id) => {
-
-    // if (typeof id != 'number') {
-    //     next()
-    // }
-
     return db.query(`
     SELECT comment_id, body, author, votes, created_at
     FROM comments

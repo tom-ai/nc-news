@@ -51,15 +51,17 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${article_id}`)
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual(expect.objectContaining({
-          author: "butter_bridge",
-          title: "Living in the shadow of a great man",
-          article_id: 1,
-          body: "I find this existence challenging",
-          topic: "mitch",
-          created_at: "2020-07-09T20:11:00.000Z",
-          votes: 100,
-        }));
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            title: "Living in the shadow of a great man",
+            article_id: 1,
+            body: "I find this existence challenging",
+            topic: "mitch",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+          })
+        );
       });
   });
   test("status: 404, item not found", () => {
@@ -192,85 +194,82 @@ describe("PATCH article vote count", () => {
   });
 });
 
-describe('GET /comments', () => {
-    test('responds with an array of comments for the given article_id', () => {
-        const articleId = 1
-        return request(app)
-        .get(`/api/articles/${articleId}/comments`)
-        .expect(200)
-        .then(({body: {comments}}) => {
-            comments.forEach((comment) => {
-                expect(comment).toEqual(
-                    expect.objectContaining({
-                        comment_id: expect.any(Number),
-                        votes: expect.any(Number),
-                        created_at: expect.any(String),
-                        author: expect.any(String),
-                        body: expect.any(String)
-                    })
-                )
+describe("GET /comments", () => {
+  test("responds with an array of comments for the given article_id", () => {
+    const articleId = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}/comments`)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
             })
-        })
-    })
-    test('status: 404, article not found', () => {
-        const articleId = 9999999
-        return request(app)
-        .get(`/api/articles/${articleId}/comments`)
-        .expect(404)
-        .then(({body}) => {
-            expect(body.msg).toBe('Article not found')
-        })
-    })
-    test('status: 400, invalid article ID', () => {
-        const articleId = 'apples'
-        return request(app)
-        .get(`/api/articles/${articleId}/comments`)
-        .expect(400)
-        .then(({body: {msg}}) => {
-            expect(msg).toBe('Invalid ID')
-        })
-    })
-
-    
-});
-
-describe('Feature: each article object includes comment count - 10', () => {
-  test('status 200: each object in array includes a comment count', () => {
-    return request(app)
-    .get('/api/articles')
-    .expect(200)
-    .then(({ body: { articles } }) => {
-      articles.forEach((article) => {
-        expect(article).toEqual(
-          expect.objectContaining({
-            comment_count: expect.any(String),
-          })
-        );
+          );
+        });
       });
-    });
-
+  });
+  test("status: 404, article not found", () => {
+    const articleId = 9999999;
+    return request(app)
+      .get(`/api/articles/${articleId}/comments`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+  test("status: 400, invalid article ID", () => {
+    const articleId = "apples";
+    return request(app)
+      .get(`/api/articles/${articleId}/comments`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid ID");
+      });
+  });
 });
 
-describe('Feature Request: comment count', () => {
-  test('status: 200, article response object contains comment count', () => {
-    const articleId = 1
+describe("Feature: each article object includes comment count - 10", () => {
+  test("status 200: each object in array includes a comment count", () => {
     return request(app)
-    .get(`/api/articles/${articleId}`)
-    .expect(200)
-    .then(({body: {article}}) => {
-      expect(article).toMatchObject({
-        comment_count: expect.any(String) // Cannot convert to number in query
-      })
-    })
-  })
-  test('status: 404, article does not exist', () => {
-    const articleId = 99999
-    return request(app)
-    .get(`/api/articles/${articleId}`)
-    .expect(404)
-    .then(({body: {msg}}) => {
-      expect(msg).toEqual('Article not found')
-    })
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              comment_count: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+});
 
-  })
+describe("Feature Request: comment count", () => {
+  test("status: 200, article response object contains comment count", () => {
+    const articleId = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          comment_count: expect.any(String), // Cannot convert to number in query
+        });
+      });
+  });
+  test("status: 404, article does not exist", () => {
+    const articleId = 99999;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Article not found");
+      });
+  });
 });
