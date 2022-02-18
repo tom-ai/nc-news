@@ -9,6 +9,6 @@ exports.postComment = (req, res, next) => {
         res.status(201).send({postedComment})
     })
     .catch(err => {
-        console.log('in error', err)
+        next(err)
     })
 }

@@ -195,25 +195,38 @@ describe("PATCH article vote count", () => {
 
 describe('POST /comment', () => {
     test('status: 201, responds with newly created comment', () => {
-        const articleId = 1
-        const comment = {
-            username: 'butter_bridge',
-            body: 'This is a comment'
-        }
-        return request(app)
-        .post(`/api/articles/${articleId}/comments`)
-        .send({comment})
-        .expect(201)
-        .then(({body: {postedComment}}) => {
-            expect(postedComment).toEqual({
-              body: 'This is a comment',
-              comment_id: expect.any(Number),
-              article_id: 1,
-              author: 'butter_bridge',
-              votes: expect.any(Number),
-              created_at: expect.any(String)
-            })
-        })
+      const articleId = 1
+      const comment = {
+          username: 'butter_bridge',
+          body: 'This is a comment'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(201)
+      .then(({body: {postedComment}}) => {
+          expect(postedComment).toEqual({
+            body: 'This is a comment',
+            comment_id: expect.any(Number),
+            article_id: 1,
+            author: 'butter_bridge',
+            votes: expect.any(Number),
+            created_at: expect.any(String)
+          })
+      })
     });
-    
+    test('status: 404, article does not exist', () => {
+      const articleId = 99999
+      const comment = {
+          username: 'butter_bridge',
+          body: 'This is a comment'
+      }
+      return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .send({comment})
+      .expect(404)
+      .then(({body: {msg}}) => {
+          expect(msg).toEqual('Article does not exist') 
+      })
+    })
 });
