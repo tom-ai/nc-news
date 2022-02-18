@@ -15,7 +15,7 @@ describe("Universal errors", () => {
       .get("/api/notARoute")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid path");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -70,7 +70,7 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${articleId}`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article not found");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("status: 400, invalid ID", () => {
@@ -79,7 +79,7 @@ describe("GET article by ID", () => {
       .get(`/api/articles/${articleId}`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid ID");
+        expect(msg).toBe("Invalid request");
       });
   });
 });
@@ -129,7 +129,7 @@ describe("GET /articles", () => {
         });
       });
   });
-  test("status: 200, articles should be sorted by date in descending order", () => {
+  test("status: 200, by default articles should be sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -156,12 +156,28 @@ describe("GET /articles", () => {
     })
   });
   describe('order by ASC or DESC', () => {
-    test('status: 200, articles can be sorted by order', () => {
+    test('status: 200, articles order can be overided to ASC)', () => {
       return request(app)
-      .get("/api/articles?order=ASC")
+      .get("/api/articles?order=desc")
       .expect(200)
       .then(({ body: { articles }}) => {
-        expect(articles).toBeSortedBy()
+        expect(articles).toBeSorted()
+      })  
+    })
+    test('status: 200, articles can be sorted and ordered', () => {
+      return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body: { articles }}) => {
+        expect(articles).toBeSortedBy("author")
+      })  
+    })
+    test('status: 400, invalid order query', () => {
+      return request(app)
+      .get("/api/articles?sort_by=author&order=invalid_order")
+      .expect(400)
+      .then(({ body: { msg }}) => {
+        expect(msg).toBe('Invalid order query')
       })  
     })
   });
@@ -250,7 +266,7 @@ describe("GET /comments", () => {
       .get(`/api/articles/${articleId}/comments`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article not found");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("status: 400, invalid article ID", () => {
@@ -259,7 +275,7 @@ describe("GET /comments", () => {
       .get(`/api/articles/${articleId}/comments`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid ID");
+        expect(msg).toBe("Invalid request");
       });
   });
 });
@@ -281,7 +297,7 @@ describe("Feature: each article object includes comment count - 10", () => {
   });
 });
 
-describe("Feature Request: comment count", () => {
+describe("Feature: comment count", () => {
   test("status: 200, article response object contains comment count", () => {
     const articleId = 1;
     return request(app)
@@ -291,15 +307,6 @@ describe("Feature Request: comment count", () => {
         expect(article).toMatchObject({
           comment_count: expect.any(String), // Cannot convert to number in query
         });
-      });
-  });
-  test("status: 404, article does not exist", () => {
-    const articleId = 99999;
-    return request(app)
-      .get(`/api/articles/${articleId}`)
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toEqual("Article not found");
       });
   });
 });

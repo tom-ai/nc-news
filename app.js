@@ -18,7 +18,7 @@ app.patch('/api/articles/:article_id', updateArticleVoteCount)
 app.get('/api/users', getUsers)
 
 app.all('/api/*', (req, res) => {
-    res.status(404).send({msg: 'Invalid path'})
+    res.status(404).send({msg: 'Not found'})
 })
 
 

@@ -16,7 +16,7 @@ exports.selectArticleById = async (articleId) => {
     ])
 
   if (articles.length === 0) {
-    return Promise.reject({ status: 404, msg: "Article not found" });
+    return Promise.reject({ status: 404, msg: "Not found" });
   }
   return articles[0];
 };
@@ -36,10 +36,16 @@ exports.incrementVote = async (articleId, vote) => {
 };
 
 exports.selectArticles = async (
-  sort_by = 'created_at'
+  sort_by = 'created_at',
+  order = 'desc'
   ) => {
+
     if (!['article_id', 'author', 'title', 'body', 'topic', 'created_at', 'votes'].includes(sort_by)) {
       return Promise.reject({status: 400, msg: "Invalid sort_by query"})
+    }
+
+    if (!['asc', 'desc'].includes(order)) {
+      return Promise.reject({status: 400, msg: "Invalid order query"})
     }
 
     const queryStr = format(`SELECT articles.*,
@@ -47,7 +53,7 @@ exports.selectArticles = async (
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
     GROUP BY articles.article_id
-    ORDER BY articles.${sort_by} DESC;
+    ORDER BY articles.${sort_by} ${order};
     `)
 
   const {rows: articles} = await db.query(queryStr);

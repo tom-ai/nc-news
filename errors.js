@@ -10,7 +10,7 @@ exports.customErrorHandler = (err, req, res, next) => {
 // PSQL errors
 exports.psqlErrorHandler = (err, req, res, next) => {
     if (err.code === '22P02') {
-        res.status(400).send({msg: 'Invalid ID'})
+        res.status(400).send({msg: 'Invalid request'})
     } else {
         console.log('psql error not yet translated...', err)
     }

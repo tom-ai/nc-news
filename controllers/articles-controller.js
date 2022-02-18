@@ -6,12 +6,12 @@ const {
 
 exports.getArticleById = (req, res, next) => {
   const { article_id: articleId } = req.params;
+  
   selectArticleById(articleId)
     .then((article) => {
       res.status(200).send({ article });
     })
     .catch((err) => {
-      // console.log(err)
       next(err);
     });
 };
@@ -29,9 +29,10 @@ exports.updateArticleVoteCount = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const {sort_by} = req.query
+  const { sort_by } = req.query
+  const { order } = req.query
 
-  selectArticles(sort_by)
+  selectArticles(sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
