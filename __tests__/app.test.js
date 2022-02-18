@@ -230,6 +230,25 @@ describe('GET /comments', () => {
             expect(msg).toBe('Invalid ID')
         })
     })
+
+    
+});
+
+describe('Feature: each article object includes comment count - 10', () => {
+  test('status 200: each object in array includes a comment count', () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({ body: { articles } }) => {
+      articles.forEach((article) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            comment_count: expect.any(String),
+          })
+        );
+      });
+    });
+
 });
 
 describe('Feature Request: comment count', () => {
@@ -252,5 +271,6 @@ describe('Feature Request: comment count', () => {
     .then(({body: {msg}}) => {
       expect(msg).toEqual('Article not found')
     })
+
   })
 });
