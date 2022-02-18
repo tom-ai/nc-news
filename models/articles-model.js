@@ -50,7 +50,7 @@ exports.selectArticles = async (
     }
 
     if (filter) {
-      const topics = await db.query('SELECT slug FROM topics ')
+      const topics = await db.query('SELECT slug FROM topics;')
       const topicSlugs = topics.rows.map((topic) => {
         const { slug } = topic;
         return slug
@@ -68,7 +68,7 @@ exports.selectArticles = async (
     LEFT JOIN comments ON comments.article_id = articles.article_id
     WHERE articles.topic = '${filter}'
     GROUP BY articles.article_id
-    ORDER BY articles.${sort_by} ${order};
+    ORDER BY articles.${sort_by} ${order};;
     `)
 
   const {rows: articles} = await db.query(queryStr);
