@@ -2,7 +2,7 @@ const express = require('express')
 
 
 const { getArticleById, updateArticleVoteCount, getArticles } = require('./controllers/articles-controller')
-const { getComments, postComment } = require('./controllers/comments-controller')
+const { getComments, postComment, deleteCommentById } = require('./controllers/comments-controller')
 const { getTopics  } = require('./controllers/topics-controller')
 const { getUsers } = require('./controllers/users-controller')
 
@@ -19,6 +19,8 @@ app.patch('/api/articles/:article_id', updateArticleVoteCount)
 app.get('/api/users', getUsers)
 
 app.post('/api/articles/:article_id/comments', postComment)
+
+app.delete('/api/comments/:comment_id', deleteCommentById)
 
 app.all('/api/*', (req, res) => {
     res.status(404).send({msg: 'Not found'})
