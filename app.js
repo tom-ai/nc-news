@@ -20,6 +20,7 @@ app.get('/api/users', getUsers)
 
 app.post('/api/articles/:article_id/comments', postComment)
 
+// app.get('/api', getEndpoints)
 app.all('/api/*', (req, res) => {
     res.status(404).send({msg: 'Not found'})
 })

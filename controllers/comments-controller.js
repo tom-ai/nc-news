@@ -11,7 +11,7 @@ exports.postComment = async (req, res, next) => {
     })
     .catch(err => {
     next(err)
-    }
+    })
 }
 
 exports.getComments = (req, res, next) => {

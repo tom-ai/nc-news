@@ -398,3 +398,14 @@ describe("Feature: Comment count in article - 10", () => {
       });
   });
 });
+
+describe('GET /api', () => {
+  test('status: 200, responds with JSON describing all endpoints available', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body: {endpoints}}) => {
+      expect(typeof endpoints).toBe('object')
+    })
+  })
+});
