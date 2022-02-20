@@ -263,69 +263,70 @@ describe("PATCH article vote count", () => {
 });
 
 describe('POST /comment', () => {
-    test('status: 201, responds with newly created comment', () => {
-      const articleId = 1
-      const comment = {
-          username: 'butter_bridge',
-          body: 'This is a comment'
-      }
-      return request(app)
-      .post(`/api/articles/${articleId}/comments`)
-      .send({comment})
-      .expect(201)
-      .then(({body: {postedComment}}) => {
-          expect(postedComment).toEqual({
-            body: 'This is a comment',
-            comment_id: expect.any(Number),
-            article_id: 1,
-            author: 'butter_bridge',
-            votes: expect.any(Number),
-            created_at: expect.any(String)
-          })
-      })
-    });
-    test('status: 404, article does not exist', () => {
-      const articleId = 99999
-      const comment = {
-          username: 'butter_bridge',
-          body: 'This is a comment'
-      }
-      return request(app)
-      .post(`/api/articles/${articleId}/comments`)
-      .send({comment})
-      .expect(404)
-      .then(({body: {msg}}) => {
-          expect(msg).toEqual('Not found') 
-      })
+  test('status: 201, responds with newly created comment', () => {
+    const articleId = 1
+    const comment = {
+        username: 'butter_bridge',
+        body: 'This is a comment'
+    }
+    return request(app)
+    .post(`/api/articles/${articleId}/comments`)
+    .send({comment})
+    .expect(201)
+    .then(({body: {postedComment}}) => {
+        expect(postedComment).toEqual({
+          body: 'This is a comment',
+          comment_id: expect.any(Number),
+          article_id: 1,
+          author: 'butter_bridge',
+          votes: expect.any(Number),
+          created_at: expect.any(String)
+        })
     })
-    test('status: 404, user does not exist', () => {
-      const articleId = 1
-      const comment = {
-          username: 'butter_bridgeeeeee',
-          body: 'This is a comment'
-      }
-      return request(app)
-      .post(`/api/articles/${articleId}/comments`)
-      .send({comment})
-      .expect(404)
-      .then(({body: {msg}}) => {
-          expect(msg).toEqual('Not found')
-      })
+  });
+  test('status: 404, article does not exist', () => {
+    const articleId = 99999
+    const comment = {
+        username: 'butter_bridge',
+        body: 'This is a comment'
+    }
+    return request(app)
+    .post(`/api/articles/${articleId}/comments`)
+    .send({comment})
+    .expect(404)
+    .then(({body: {msg}}) => {
+        expect(msg).toEqual('Not found') 
     })
-    test('status 400: malformed body', () => {
-      const articleId = 1
-      const comment = {
-          username: 'butter_bridge',
-          comment: 'This has an incorrectly named property'
-      }
-      return request(app)
-      .post(`/api/articles/${articleId}/comments`)
-      .send({comment})
-      .expect(400)
-      .then(({body: {msg}}) => {
-          expect(msg).toEqual('Malformed body') 
-      })
+  })
+  test('status: 404, user does not exist', () => {
+    const articleId = 1
+    const comment = {
+        username: 'butter_bridgeeeeee',
+        body: 'This is a comment'
+    }
+    return request(app)
+    .post(`/api/articles/${articleId}/comments`)
+    .send({comment})
+    .expect(404)
+    .then(({body: {msg}}) => {
+        expect(msg).toEqual('Not found')
     })
+  })
+  test('status 400: malformed body', () => {
+    const articleId = 1
+    const comment = {
+        username: 'butter_bridge',
+        comment: 'This has an incorrectly named property'
+    }
+    return request(app)
+    .post(`/api/articles/${articleId}/comments`)
+    .send({comment})
+    .expect(400)
+    .then(({body: {msg}}) => {
+        expect(msg).toEqual('Malformed body') 
+    })
+  })
+})
 
 describe("GET /comments", () => {
   test("responds with an array of comments for the given article_id", () => {
@@ -369,7 +370,7 @@ describe("GET /comments", () => {
   });
 });
 
-describe("Feature: each article object includes comment count - 10", () => {
+describe("Feature: Comment count in article - 10", () => {
   test("status 200: each object in array includes a comment count", () => {
     return request(app)
       .get("/api/articles")
@@ -384,9 +385,7 @@ describe("Feature: each article object includes comment count - 10", () => {
         });
       });
   });
-});
 
-describe("Feature: comment count", () => {
   test("status: 200, article response object contains comment count", () => {
     const articleId = 1;
     return request(app)
@@ -398,5 +397,4 @@ describe("Feature: comment count", () => {
         });
       });
   });
-
 });
