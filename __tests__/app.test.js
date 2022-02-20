@@ -323,7 +323,7 @@ describe('POST /comment', () => {
     .send({comment})
     .expect(400)
     .then(({body: {msg}}) => {
-        expect(msg).toEqual('Malformed body') 
+        expect(msg).toEqual('Malformed comment body') 
     })
   })
 })
@@ -399,13 +399,14 @@ describe("Feature: Comment count in article - 10", () => {
   });
 });
 
+
 describe('GET /api', () => {
-  test('status: 200, responds with JSON describing all endpoints available', () => {
+  test('status: 200, responds with all available endpoints in JSON format', () => {
     return request(app)
     .get('/api')
     .expect(200)
     .then(({body: {endpoints}}) => {
       expect(typeof endpoints).toBe('object')
     })
-  })
+  });
 });

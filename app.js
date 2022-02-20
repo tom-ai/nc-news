@@ -5,6 +5,7 @@ const { getArticleById, updateArticleVoteCount, getArticles } = require('./contr
 const { getComments, postComment } = require('./controllers/comments-controller')
 const { getTopics  } = require('./controllers/topics-controller')
 const { getUsers } = require('./controllers/users-controller')
+const { getEndpoints } = require('./controllers/endpoints-controller')
 
 const { customErrorHandler, psqlErrorHandler } = require('./errors')
 
@@ -20,7 +21,8 @@ app.get('/api/users', getUsers)
 
 app.post('/api/articles/:article_id/comments', postComment)
 
-// app.get('/api', getEndpoints)
+app.get('/api', getEndpoints)
+
 app.all('/api/*', (req, res) => {
     res.status(404).send({msg: 'Not found'})
 })
