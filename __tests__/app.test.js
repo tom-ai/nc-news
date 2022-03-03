@@ -355,6 +355,8 @@ describe("POST /comment", () => {
       });
   });
 })
+
+
 describe("GET /comments", () => {
   test("responds with an array of comments for the given article_id", () => {
     const articleId = 1;
@@ -375,9 +377,7 @@ describe("GET /comments", () => {
         });
       });
   });
-});
-
-test("status: 404, article not found", () => {
+  test("status: 404, article not found", () => {
   const articleId = 9999999;
   return request(app)
     .get(`/api/articles/${articleId}/comments`)
@@ -396,6 +396,10 @@ test("status: 400, invalid article ID", () => {
       expect(msg).toBe("Invalid request");
     });
 });
+  
+});
+
+
 
 
 describe('delete commit by id', () => {
@@ -426,4 +430,33 @@ describe('delete commit by id', () => {
 });
 
 
+
+describe("Feature: Comment count in article - 10", () => {
+  test("status 200: each object in array includes a comment count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              comment_count: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  test("status: 200, article response object contains comment count", () => {
+    const articleId = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          comment_count: expect.any(String), // Cannot convert to number in query
+        });
+      });
+  });
+});
 
