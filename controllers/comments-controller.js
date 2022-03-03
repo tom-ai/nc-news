@@ -10,6 +10,7 @@ exports.postComment = async (req, res, next) => {
         res.status(201).send({postedComment})
     })
     .catch(err => {
+
         next(err)
     })
 }

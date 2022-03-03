@@ -347,6 +347,7 @@ describe("POST /comment", () => {
       comment: "This has an incorrectly named property",
     };
     return request(app)
+
       .post(`/api/articles/${articleId}/comments`)
       .send({ comment })
       .expect(400)
@@ -460,3 +461,14 @@ describe("Feature: Comment count in article - 10", () => {
   });
 });
 
+
+describe('GET /api', () => {
+  test('status: 200, responds with all available endpoints in JSON format', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body: {endpoints}}) => {
+      expect(typeof endpoints).toBe('object')
+    })
+  });
+});
