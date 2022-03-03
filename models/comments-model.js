@@ -1,36 +1,45 @@
-
 const db = require("../db/connection");
 const format = require("pg-format");
 
-exports.createNewComment = (comment, articleId) => {
-  const username = comment.username;
-  const body = comment.body;
+exports.createNewComment = async (commentObject, articleId) => {
+  const { username } = commentObject;
+  const { body } = commentObject;
 
-  return db
-    .query(
-      `
-        INSERT INTO comments
-            (author, body, article_id)
-        VALUES
-            ($1, $2, $3) RETURNING *`,
-      [username, body, articleId]
-    )
-    .then((result) => {
-      return result.rows[0];
-    });
+  const response = await db.query(
+    `
+    INSERT INTO comments
+        (author, body, article_id)
+    VALUES
+        ($1, $2, $3) RETURNING *`,
+    [username, body, articleId]
+  );
+  return response.rows[0];
 };
 
 
-exports.selectComments = (id) => {
-    return db.query(`
+exports.selectComments = async (id) => {
+  const response = await db.query(
+    `
     SELECT comment_id, body, author, votes, created_at
     FROM comments
-    WHERE article_id = $1`, [id])
-    .then((response) => {
-        if (response.rows.length === 0) {
-            return Promise.reject({status: '404', msg: 'Not found'})
-        }
-        return response.rows
-    })
-}
+    WHERE article_id = $1`,
+    [id]
+  );
 
+  if (response.rows.length === 0) {
+    return Promise.reject({ status: "404", msg: "Not found" });
+  } else return response.rows;
+};
+
+exports.removeComment = async (id) => {
+  const response = await db.query(
+    `
+    DELETE FROM comments
+    WHERE comment_id = $1`,
+    [id]
+  );
+  
+  if (response.rowCount === 0) {
+    return Promise.reject({ status: "404", msg: "Not found" });
+  }
+};

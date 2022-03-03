@@ -1,4 +1,4 @@
-const { selectComments, createNewComment} = require('../models/comments-model') 
+const { selectComments, createNewComment, removeComment} = require('../models/comments-model') 
 const { checkUserExists } = require('../db/helpers/utils')
 
 exports.postComment = async (req, res, next) => {
@@ -10,8 +10,9 @@ exports.postComment = async (req, res, next) => {
         res.status(201).send({postedComment})
     })
     .catch(err => {
-    next(err)
-    }
+
+        next(err)
+    })
 }
 
 exports.getComments = (req, res, next) => {
@@ -22,6 +23,17 @@ exports.getComments = (req, res, next) => {
     })
     .catch((err) => {
 
+        next(err)
+    })
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    const { comment_id: commentId } = req.params
+    removeComment(commentId)
+    .then((response) => {
+        res.sendStatus(204)
+    })
+    .catch((err) => {
         next(err)
     })
 }

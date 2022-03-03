@@ -63,6 +63,20 @@ describe("GET article by ID", () => {
           })
         );
       });
+    })
+    describe("Feature update: comment count", () => {
+      test("status: 200, article response object contains comment count", () => {
+        const articleId = 1;
+        return request(app)
+          .get(`/api/articles/${articleId}`)
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).toMatchObject({
+              comment_count: expect.any(String), // Cannot convert to number in query
+            });
+          });
+      });
+    });
   });
   test("status: 404, item not found", () => {
     const articleId = 9999999;
@@ -82,7 +96,6 @@ describe("GET article by ID", () => {
         expect(msg).toBe("Invalid request");
       });
   });
-});
 
 describe("GET /users", () => {
   test("status: 200, responds with an array of user objectse", () => {
@@ -137,75 +150,90 @@ describe("GET /articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  describe('sort_by', () => {
-    test('status: 200, sort_by sorts the articles (date by default)', () => {
+  describe("sort_by", () => {
+    test("status: 200, sort_by sorts the articles (date by default)", () => {
       return request(app)
-      .get("/api/articles?sort_by=title")
-      .expect(200)
-      .then(({ body: { articles }}) => {
-        expect(articles).toBeSortedBy("title", {descending: true})
-      })
-    })
-    test('status: 400, invalid sort_by query', () => {
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("title", { descending: true });
+        });
+    });
+    test("status: 400, invalid sort_by query", () => {
       return request(app)
-      .get("/api/articles?sort_by=invalid_query")
-      .expect(400)
-      .then(({body: {msg}}) => {
-        expect(msg).toBe('Invalid sort_by query')
-      })
-    })
+        .get("/api/articles?sort_by=invalid_query")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid sort_by query");
+        });
+    });
   });
-  describe('order by ASC or DESC', () => {
-    test('status: 200, articles order can be overided to ASC)', () => {
+  describe("order by ASC or DESC", () => {
+    test("status: 200, articles order can be overided to ASC)", () => {
       return request(app)
-      .get("/api/articles?order=desc")
-      .expect(200)
-      .then(({ body: { articles }}) => {
-        expect(articles).toBeSorted()
-      })  
-    })
-    test('status: 200, articles can be sorted and ordered', () => {
+        .get("/api/articles?order=desc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSorted();
+        });
+    });
+    test("status: 200, articles can be sorted and ordered", () => {
       return request(app)
-      .get("/api/articles?sort_by=author&order=asc")
-      .expect(200)
-      .then(({ body: { articles }}) => {
-        expect(articles).toBeSortedBy("author")
-      })  
-    })
-    test('status: 400, invalid order query', () => {
+        .get("/api/articles?sort_by=author&order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("author");
+        });
+    });
+    test("status: 400, invalid order query", () => {
       return request(app)
-      .get("/api/articles?sort_by=author&order=invalid_order")
-      .expect(400)
-      .then(({ body: { msg }}) => {
-        expect(msg).toBe('Invalid order query')
-      })  
-    })
-    test('status: 200, articles filtered by topic', () => {
-      const slug = 'mitch'
+        .get("/api/articles?sort_by=author&order=invalid_order")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid order query");
+        });
+    });
+    test("status: 200, articles filtered by topic", () => {
+      const slug = "mitch";
       return request(app)
-      .get(`/api/articles?topic=${slug}`)
-      .expect(200)
-      .then(({body: {articles}}) => {
-        articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining({
-              topic: 'mitch'
-            }))
-        })
-      })
-    })
-    test('status: 400, invalid filter query', () => {
+        .get(`/api/articles?topic=${slug}`)
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                topic: "mitch",
+              })
+            );
+          });
+        });
+    });
+    test("status: 400, invalid filter query", () => {
       return request(app)
-      .get('/api/articles?topic=invalid_filter')
-      .expect(400)
-      .then(({body: {msg}}) => {
-        expect(msg).toBe('Invalid filter query')
-      })
-    })
+        .get("/api/articles?topic=invalid_filter")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid filter query");
+        });
+    });
+  });
+  describe("Feature update: each article object includes comment count - 10", () => {
+    test("status 200: each object in array includes a comment count", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                comment_count: expect.any(String),
+              })
+            );
+          });
+        });
+    });
   });
 });
-
-
 
 describe("PATCH article vote count", () => {
   test("status: 200, article vote increments by vote amount", () => {
@@ -262,71 +290,73 @@ describe("PATCH article vote count", () => {
   });
 });
 
-describe('POST /comment', () => {
-  test('status: 201, responds with newly created comment', () => {
-    const articleId = 1
+describe("POST /comment", () => {
+  test("status: 201, responds with newly created comment", () => {
+    const articleId = 1;
     const comment = {
-        username: 'butter_bridge',
-        body: 'This is a comment'
-    }
+      username: "butter_bridge",
+      body: "This is a comment",
+    };
     return request(app)
-    .post(`/api/articles/${articleId}/comments`)
-    .send({comment})
-    .expect(201)
-    .then(({body: {postedComment}}) => {
+      .post(`/api/articles/${articleId}/comments`)
+      .send({ comment })
+      .expect(201)
+      .then(({ body: { postedComment } }) => {
         expect(postedComment).toEqual({
-          body: 'This is a comment',
+          body: "This is a comment",
           comment_id: expect.any(Number),
           article_id: 1,
-          author: 'butter_bridge',
+          author: "butter_bridge",
           votes: expect.any(Number),
-          created_at: expect.any(String)
-        })
-    })
+          created_at: expect.any(String),
+        });
+      });
   });
-  test('status: 404, article does not exist', () => {
-    const articleId = 99999
+  test("status: 404, article does not exist", () => {
+    const articleId = 99999;
     const comment = {
-        username: 'butter_bridge',
-        body: 'This is a comment'
-    }
+      username: "butter_bridge",
+      body: "This is a comment",
+    };
     return request(app)
-    .post(`/api/articles/${articleId}/comments`)
-    .send({comment})
-    .expect(404)
-    .then(({body: {msg}}) => {
-        expect(msg).toEqual('Not found') 
-    })
-  })
-  test('status: 404, user does not exist', () => {
-    const articleId = 1
+      .post(`/api/articles/${articleId}/comments`)
+      .send({ comment })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Not found");
+      });
+  });
+  test("status: 404, user does not exist", () => {
+    const articleId = 1;
     const comment = {
-        username: 'butter_bridgeeeeee',
-        body: 'This is a comment'
-    }
+      username: "butter_bridgeeeeee",
+      body: "This is a comment",
+    };
     return request(app)
-    .post(`/api/articles/${articleId}/comments`)
-    .send({comment})
-    .expect(404)
-    .then(({body: {msg}}) => {
-        expect(msg).toEqual('Not found')
-    })
-  })
-  test('status 400: malformed body', () => {
-    const articleId = 1
+      .post(`/api/articles/${articleId}/comments`)
+      .send({ comment })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Not found");
+      });
+  });
+  test("status 400: malformed body", () => {
+    const articleId = 1;
     const comment = {
-        username: 'butter_bridge',
-        comment: 'This has an incorrectly named property'
-    }
+      username: "butter_bridge",
+      comment: "This has an incorrectly named property",
+    };
     return request(app)
-    .post(`/api/articles/${articleId}/comments`)
-    .send({comment})
-    .expect(400)
-    .then(({body: {msg}}) => {
-        expect(msg).toEqual('Malformed body') 
-    })
-  })
+
+      .post(`/api/articles/${articleId}/comments`)
+      .send({ comment })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Malformed comment body");
+      });
+  });
 })
+
 
 describe("GET /comments", () => {
   test("responds with an array of comments for the given article_id", () => {
@@ -348,27 +378,59 @@ describe("GET /comments", () => {
         });
       });
   });
-
   test("status: 404, article not found", () => {
-    const articleId = 9999999;
-    return request(app)
-      .get(`/api/articles/${articleId}/comments`)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
-      });
-  });
-
-  test("status: 400, invalid article ID", () => {
-    const articleId = "apples";
-    return request(app)
-      .get(`/api/articles/${articleId}/comments`)
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid request");
-      });
-  });
+  const articleId = 9999999;
+  return request(app)
+    .get(`/api/articles/${articleId}/comments`)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found");
+    });
 });
+
+test("status: 400, invalid article ID", () => {
+  const articleId = "apples";
+  return request(app)
+    .get(`/api/articles/${articleId}/comments`)
+    .expect(400)
+    .then(({ body: { msg } }) => {
+      expect(msg).toBe("Invalid request");
+    });
+});
+  
+});
+
+
+
+
+describe('delete commit by id', () => {
+  test('status: 204, deletes comment', () => {
+    const commentId = 1
+    return request(app)
+    .delete(`/api/comments/${commentId}`)
+    .expect(204)
+  })
+  test('status: 404, comment not found', () => {
+    const commentId = 99999
+    return request(app)
+    .delete(`/api/comments/${commentId}`)
+    .expect(404)
+    .then(({body: {msg}}) => {
+      expect(msg).toBe('Not found')
+    })
+  })
+  test('status: 400, invalid comment id', () => {
+    const commentId = 'notAValidId'
+    return request(app)
+    .delete(`/api/comments/${commentId}`)
+    .expect(400)
+    .then(({body: {msg}}) => {
+      expect(msg).toBe('Invalid request')
+    })
+  })
+});
+
+
 
 describe("Feature: Comment count in article - 10", () => {
   test("status 200: each object in array includes a comment count", () => {
@@ -396,5 +458,17 @@ describe("Feature: Comment count in article - 10", () => {
           comment_count: expect.any(String), // Cannot convert to number in query
         });
       });
+  });
+});
+
+
+describe('GET /api', () => {
+  test('status: 200, responds with all available endpoints in JSON format', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body: {endpoints}}) => {
+      expect(typeof endpoints).toBe('object')
+    })
   });
 });
