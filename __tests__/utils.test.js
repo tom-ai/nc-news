@@ -103,10 +103,3 @@ describe("formatComments", () => {
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
 });
-
-describe('Check user exists', () => {
-  test('resolves with an error if no user is found', () => {
-    const username = 'notAUser'
-    return expect(checkUserExists(username)).rejects.toEqual({status: 404, msg: 'User does not exist'})
-    })
-});
