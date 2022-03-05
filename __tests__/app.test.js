@@ -53,12 +53,12 @@ describe("GET article by ID", () => {
       .then(({ body }) => {
         expect(body.article).toEqual(
           expect.objectContaining({
-            author: "butter_bridge",
-            title: "Living in the shadow of a great man",
             article_id: 1,
+            author: "butter_bridge",
             body: "I find this existence challenging",
-            topic: "mitch",
+            title: "Living in the shadow of a great man",
             created_at: "2020-07-09T20:11:00.000Z",
+            topic: "mitch",
             votes: 100,
           })
         );
