@@ -3,6 +3,7 @@ const format = require('pg-format')
 
 
 exports.selectArticleById = async (articleId) => {
+  
   const {rows: articles} = await db
   .query(`
   SELECT articles.*,
@@ -36,11 +37,11 @@ exports.incrementVote = async (articleId, vote) => {
 };
 
 exports.selectArticles = async (
+  
   sort_by = 'created_at',
   order = 'desc',
   filter
   ) => {
-
     if (!['article_id', 'author', 'title', 'body', 'topic', 'created_at', 'votes'].includes(sort_by)) {
       return Promise.reject({status: 400, msg: "Invalid sort_by query"})
     }
@@ -48,6 +49,12 @@ exports.selectArticles = async (
     if (!['asc', 'desc'].includes(order)) {
       return Promise.reject({status: 400, msg: "Invalid order query"})
     }
+    
+
+    let queryStr = format(`SELECT articles.*,
+    COUNT(comments.comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON comments.article_id = articles.article_id`)
 
     if (filter) {
       const topics = await db.query('SELECT slug FROM topics;')
@@ -59,16 +66,13 @@ exports.selectArticles = async (
       if (!topicSlugs.includes(filter)) {
         return Promise.reject({status: 400, msg: 'Invalid filter query'})
       }
+      queryStr += format(`
+      WHERE articles.topic = '${filter}'`)
     }
     
-
-    const queryStr = format(`SELECT articles.*,
-    COUNT(comments.comment_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments ON comments.article_id = articles.article_id
-    WHERE articles.topic = '${filter}'
+    queryStr += format(`
     GROUP BY articles.article_id
-    ORDER BY articles.${sort_by} ${order};;
+    ORDER BY articles.${sort_by} ${order};
     `)
 
   const {rows: articles} = await db.query(queryStr);
