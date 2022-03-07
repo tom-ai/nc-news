@@ -25,3 +25,25 @@
     }
   }
 }
+
+{
+  "articles": {
+    "GET /api/articles": {},
+    "GET /api/articles/:article_id": {},
+    "PATCH /api/articles/:article_id": {},
+  },
+  "topics": {
+    "GET /api/topics": {},
+  },
+  "comments": {
+    "GET /api/articles/:article_id/comments": {},
+    "POST /api/articles/:article_id/comments": {},
+    "DELETE /api/comments/:comment_id": {},
+  },
+  "users": {
+    "GET /api/users": {},
+  },
+  "endpoints": {
+    "GET /api": {},
+  }
+}
