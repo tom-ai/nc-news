@@ -25,11 +25,15 @@ exports.incrementVote = async (articleId, vote) => {
     return Promise.reject({ status: 400, msg: "Invalid vote" });
   }
   return db
-    .query("SELECT * FROM articles WHERE articles.article_id = $1;", [
-      articleId,
-    ])
+    .query(
+      `
+      UPDATE articles
+      SET votes = $2
+      WHERE articles.article_id = $1
+      RETURNING *`,
+      [articleId, vote]
+    )
     .then(({ rows: [article] }) => {
-      article.votes += vote;
       return article;
     });
 };

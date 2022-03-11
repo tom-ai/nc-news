@@ -191,7 +191,7 @@ describe("Articles", () => {
       });
     });
   });
-  describe("PATCH article vote count", () => {
+  describe.only("PATCH article vote count", () => {
     test("status: 200, article vote increments by 1", () => {
       const articleId = 2;
       const newVote = { inc_votes: 1 };
