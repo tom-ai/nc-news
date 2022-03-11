@@ -5,7 +5,7 @@ exports.selectArticleById = async (articleId) => {
   const { rows: articles } = await db.query(
     `
   SELECT articles.*,
-  COUNT(comments.comment_id) AS comment_count
+  COUNT(comments.comment_id)::INT AS comment_count
   FROM articles
   LEFT JOIN comments ON comments.article_id = articles.article_id
   WHERE articles.article_id = $1
@@ -63,7 +63,7 @@ exports.selectArticles = async (
   }
 
   let queryStr = format(`SELECT articles.*,
-    COUNT(comments.comment_id) AS comment_count
+    COUNT(comments.comment_id)::INT AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id`);
 

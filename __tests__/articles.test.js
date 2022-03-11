@@ -103,7 +103,7 @@ describe("Articles", () => {
             articles.forEach((article) => {
               expect(article).toEqual(
                 expect.objectContaining({
-                  comment_count: expect.any(String),
+                  comment_count: expect.any(Number),
                 })
               );
             });
@@ -119,7 +119,7 @@ describe("Articles", () => {
             articles.forEach((article) => {
               expect(article).toEqual(
                 expect.objectContaining({
-                  comment_count: expect.any(String),
+                  comment_count: expect.any(Number),
                 })
               );
             });
@@ -133,7 +133,7 @@ describe("Articles", () => {
           .expect(200)
           .then(({ body: { article } }) => {
             expect(article).toMatchObject({
-              comment_count: expect.any(String), // Cannot convert to number in query
+              comment_count: expect.any(Number), // Cannot convert to number in query
             });
           });
       });
@@ -185,13 +185,13 @@ describe("Articles", () => {
           .expect(200)
           .then(({ body: { article } }) => {
             expect(article).toMatchObject({
-              comment_count: expect.any(String), // Cannot convert to number in query
+              comment_count: expect.any(Number), // Cannot convert to number in query
             });
           });
       });
     });
   });
-  describe.only("PATCH article vote count", () => {
+  describe("PATCH article vote count", () => {
     test("status: 200, article vote increments by 1", () => {
       const articleId = 2;
       const newVote = { inc_votes: 1 };
