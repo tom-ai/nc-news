@@ -28,7 +28,7 @@ exports.incrementVote = async (articleId, vote) => {
     .query(
       `
       UPDATE articles
-      SET votes = $2
+      SET votes = votes + $2
       WHERE articles.article_id = $1
       RETURNING *`,
       [articleId, vote]
