@@ -16,13 +16,13 @@ exports.createNewComment = async (commentObject, articleId) => {
   return response.rows[0];
 };
 
-
 exports.selectComments = async (id) => {
   const response = await db.query(
     `
     SELECT comment_id, body, author, votes, created_at
     FROM comments
-    WHERE article_id = $1`,
+    WHERE article_id = $1
+    ORDER BY created_at desc`,
     [id]
   );
 
@@ -38,7 +38,7 @@ exports.removeComment = async (id) => {
     WHERE comment_id = $1`,
     [id]
   );
-  
+
   if (response.rowCount === 0) {
     return Promise.reject({ status: "404", msg: "Not found" });
   }
